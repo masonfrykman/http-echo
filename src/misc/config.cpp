@@ -2,7 +2,7 @@
 
 #include "utils.hpp"
 
-void he::config::loadFromFile(std::ifstream input) {
+void he::config::loadFromFile(std::ifstream& input) {
     std::string line;
     while(getline(std::cin, line)) {
         if(line.empty()) continue;

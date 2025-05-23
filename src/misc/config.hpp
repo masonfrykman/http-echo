@@ -8,5 +8,5 @@
 namespace he::config {
     static std::unordered_map<std::string, std::string> store;
 
-    void loadFromFile(std::ifstream input);
+    void loadFromFile(std::ifstream& input);
 }
