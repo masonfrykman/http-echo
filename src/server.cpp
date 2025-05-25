@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <netdb.h>
 #include <cstring>
+#include <stdexcept>
 
 #include "misc/config.hpp"
 
@@ -39,12 +40,24 @@ int main(int argc, char const *argv[])
 
     // TODO: Error checking on the socket operations
     int lookup = getaddrinfo(addrStr.c_str(), portStr.c_str(), &hint, &bindAddress);
+    if(lookup != 0) {
+        throw std::runtime_error("Socket Error at getaddrinfo(): " + std::string(gai_strerror(lookup)));
+    }
 
     int sock = socket(bindAddress->ai_protocol, SOCK_STREAM, 0);
+    if(sock == -1) {
+        throw std::runtime_error("Socket Error at socket(), errno: " + errno);
+    }
 
     int bindOp = bind(sock, bindAddress->ai_addr, bindAddress->ai_addrlen);
+    if(bindOp == -1) {
+        throw std::runtime_error("Socket Error at bind(), errno: " + errno);
+    }
 
     int listenOp = listen(sock, 15);
+    if(listenOp == -1) {
+        throw std::runtime_error("Socket Error at listen(), errno: " + errno);
+    }
 
     while(true) {
         struct sockaddr acceptedSockaddr;
