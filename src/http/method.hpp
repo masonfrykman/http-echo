@@ -14,6 +14,6 @@ namespace he::http {
             case PUT: return "PUT";
             case OPTIONS: return "OPTIONS";
         }
-        return ""
+        return "";
     }
 }
