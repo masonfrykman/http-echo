@@ -11,7 +11,7 @@ void he::config::loadFromFile(std::ifstream& input) {
             line.pop_back();
         }
         
-        util::trimLeft(line);
+        he::util::trimLeft(line);
         if(line.empty()) continue;
 
         // check for comments (# and //)

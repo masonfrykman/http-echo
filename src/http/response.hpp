@@ -16,9 +16,9 @@ namespace he::http {
         Response(int status, std::string body) : status(status), body(body) {}
 
         // Getters
-        int status() { return status; }
-        std::unordered_map<std::string, std::string> headers() { return headers; }
-        std::string body() { return body; }
+        int getStatus() { return status; }
+        std::unordered_map<std::string, std::string> getHeaders() { return headers; }
+        std::string getBody() { return body; }
 
         // Setters
         void setStatus(int newVal) { status = newVal; }

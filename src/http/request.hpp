@@ -27,22 +27,18 @@ namespace he::http {
             if(data.empty()) throw std::invalid_argument("Data cannot be empty.");
             
             // First line
-            int firstNewline = data.find_first_of('\n');
+            size_t firstNewline = data.find_first_of('\n');
             if(firstNewline == std::string::npos) throw std::invalid_argument("Not a valid request.");
 
             std::string firstLine = data.substr(0, firstNewline);
             
-            int firstWS = firstLine.find_first_of(' ');
+            size_t firstWS = firstLine.find_first_of(' ');
             if(firstWS == std::string::npos) throw std::invalid_argument("Not a valid request.");
 
             std::string methodStr = data.substr(0, firstWS);
-            try {
-                method = stringToMethod(methodStr);
-            } catch (std::invalid_argument arg) {
-                throw std::invalid_argument("Not a valid request.");
-            }
+            method = stringToMethod(methodStr);
 
-            int nextWS = firstLine.find_first_of(' ', firstWS + 1);
+            size_t nextWS = firstLine.find_first_of(' ', firstWS + 1);
             if(nextWS == std::string::npos) throw std::invalid_argument("Not a valid request.");
 
             path = firstLine.substr(firstWS + 1, nextWS - firstWS - 1);
@@ -77,8 +73,8 @@ namespace he::http {
         }
 
         // First line getters
-        Method method() { return method; }
-        std::string path() { return path; }
+        Method getMethod() { return method; }
+        std::string getPath() { return path; }
         std::string formattedFirstLine() { return methodToString(method) + " " + path + " HTTP/1.1"; }
         
         // First line setters
@@ -86,7 +82,7 @@ namespace he::http {
         void setPath(std::string newVal) { path = newVal; }
 
         // Header getters / setters
-        std::unordered_map<std::string, std::string> headers() { return headers; }
+        std::unordered_map<std::string, std::string> getHeaders() { return headers; }
 
         void setHeader(std::string key, std::string value) {
             if(key.empty()) throw std::invalid_argument("Key cannot be empty");
