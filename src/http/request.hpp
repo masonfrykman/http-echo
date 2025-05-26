@@ -23,6 +23,58 @@ namespace he::http {
         std::string body;
     public:
         Request(Method method, std::string path, std::string body) : method(method), path(path), body(body) {}
+        Request(std::string data) {
+            if(data.empty()) throw std::invalid_argument("Data cannot be empty.");
+            
+            // First line
+            int firstNewline = data.find_first_of('\n');
+            if(firstNewline == std::string::npos) throw std::invalid_argument("Not a valid request.");
+
+            std::string firstLine = data.substr(0, firstNewline);
+            
+            int firstWS = firstLine.find_first_of(' ');
+            if(firstWS == std::string::npos) throw std::invalid_argument("Not a valid request.");
+
+            std::string methodStr = data.substr(0, firstWS);
+            try {
+                method = stringToMethod(methodStr);
+            } catch (std::invalid_argument arg) {
+                throw std::invalid_argument("Not a valid request.");
+            }
+
+            int nextWS = firstLine.find_first_of(' ', firstWS + 1);
+            if(nextWS == std::string::npos) throw std::invalid_argument("Not a valid request.");
+
+            path = firstLine.substr(firstWS + 1, nextWS - firstWS - 1);
+
+            // Headers
+            std::string dataWithoutFirstline = data.substr(firstNewline + 1);
+
+            auto it = dataWithoutFirstline.begin();
+            std::string line;
+            while(it != dataWithoutFirstline.end() && !(*it == '\n' && *(it++) == '\n')) {
+                if(*it == '\n') { // Process the line
+                    size_t delimiter = line.find_first_of(": ");
+                    if(delimiter != std::string::npos && delimiter != line.size() - 2) { // Don't commit a line that is invalid.
+                        headers[line.substr(0, delimiter)] = line.substr(delimiter + 1);
+                    }
+                    line.clear();
+                    continue;
+                }
+                line.push_back(*it);
+            }
+
+            // Body
+            if(it == dataWithoutFirstline.end()) {
+                body = nullptr;
+                return;
+            }
+            it += 2;
+            while(it < dataWithoutFirstline.end()) {
+                body.push_back(*it);
+                it++;
+            }
+        }
 
         // First line getters
         Method method() { return method; }
